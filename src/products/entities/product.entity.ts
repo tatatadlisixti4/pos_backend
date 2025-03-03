@@ -17,14 +17,14 @@ export class Product {
         nullable: true,
         default: 'default.svg'
     })
-    image: string
+    image: string;
 
     @Column({ type: 'decimal' })
-    price: number
+    price: number;
 
     @Column({ type: 'int' })
-    inventory: number
+    inventory: number;
 
     @ManyToOne(() => Category)
-    category: Category
+    category: Category;
 }
