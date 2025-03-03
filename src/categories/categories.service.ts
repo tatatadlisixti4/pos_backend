@@ -39,4 +39,3 @@ export class CategoriesService {
     return "Categoría eliminada";
   }
 }
- 
