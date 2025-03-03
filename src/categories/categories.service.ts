@@ -33,7 +33,10 @@ export class CategoriesService {
     return this.categoryRepository.save(category);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} category`;
+  async remove(id: number) {
+    const category = await this.findOne(id);
+    await this.categoryRepository.delete(category);
+    return "Categoría eliminada";
   }
 }
+ 

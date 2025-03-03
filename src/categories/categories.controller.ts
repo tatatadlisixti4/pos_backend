@@ -43,7 +43,10 @@ export class CategoriesController {
   }
 
   @Delete(':id')
-  remove(@Param('id', IdValidationPipe) id: string) {
+  remove(
+    @Param('id', IdValidationPipe) 
+    id: string
+  ) {
     return this.categoriesService.remove(+id);
   }
 }
