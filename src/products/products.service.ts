@@ -30,15 +30,32 @@ export class ProductsService {
     return 'Producto añadadido con exito';
   }
 
-  async findAll() {
-    const [data, count] = await this.productRepository.findAndCount({
+  async findAll(categoryId : number | null) {
+    if(categoryId){
+      const [products, total] = await this.productRepository.findAndCount({
+        where: {
+          category: {
+            id: categoryId
+          }
+        },
+        order: {
+          id: 'DESC'
+        }
+      });
+      return {
+        products,
+        total
+      }
+    }
+    const [products, total] = await this.productRepository.findAndCount({
       order: {
         id: 'DESC'
       }
     });
+
     return {
-      data,
-      count 
+      products,
+      total 
     }
   }
 
