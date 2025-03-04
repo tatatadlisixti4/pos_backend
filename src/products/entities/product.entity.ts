@@ -5,6 +5,7 @@ import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 export class Product {
     @PrimaryGeneratedColumn()
     id: number;
+    
     @Column({
         type: 'varchar',
         length: 60
@@ -25,6 +26,6 @@ export class Product {
     @Column({ type: 'int' })
     inventory: number;
 
-    @ManyToOne(() => Category, {eager: false})
+    @ManyToOne(() => Category)
     category: Category;
 }
