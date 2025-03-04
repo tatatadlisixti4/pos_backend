@@ -12,7 +12,7 @@ export class ProductsController {
   create(@Body() createProductDto: CreateProductDto) {    
     return this.productsService.create(createProductDto);
   }
-
+  
   @Get()
   findAll(@Query() query : GetProductsQueryDto) {
     const category = query.category_id ? query.category_id : null;
