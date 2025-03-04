@@ -31,10 +31,12 @@ export class ProductsService {
     return 'Producto añadadido con exito';
   }
 
-  async findAll(categoryId: number | null) {
+  async findAll(categoryId: number | null, take: number, skip: number) {
     const options: FindManyOptions<Product> = {
       relations: { category: true },
-      order: { id: 'DESC' },
+      order: { id: 'ASC' },
+      take,
+      skip,
     };
 
     if (categoryId) {
@@ -43,12 +45,22 @@ export class ProductsService {
       };
     }
 
-    const [products, total] = await this.productRepository.findAndCount(options);
+    const [products, total] =
+      await this.productRepository.findAndCount(options);
+
     return { products, total };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  async findOne(id: number) {
+    const product = await this.productRepository.findOne({
+      where: { id },
+      relations: ['category'],
+    });
+
+    if(!product) {
+      throw new NotFoundException(`El producto con el ID: ${id} no fue encontrado`);
+    }
+    return product;
   }
 
   update(id: number, updateProductDto: UpdateProductDto) {
