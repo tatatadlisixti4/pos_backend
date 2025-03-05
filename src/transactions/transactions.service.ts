@@ -66,6 +66,7 @@ export class TransactionsService {
       where: {id},
       relations: { contents : true }
     });
+
     const errors : string[] = [];
     if(!transaction) {
       errors.push('Transacción no disponible');
@@ -78,7 +79,20 @@ export class TransactionsService {
     return `This action updates a #${id} transaction`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} transaction`;
+  async remove(id: number) {
+    const transaction = await this.findOne(id);
+
+    const errors : string[] = [];
+    if(!transaction) {
+      errors.push('Transacción no disponible');
+      throw new NotFoundException(errors);  
+    }
+
+    for (const content of transaction.contents) {
+      await this.transactionContentsRepository.remove(content);
+    }    
+
+    await this.transactionRepository.remove(transaction);
+    return {message: 'Venta eliminada'};
   }
 }
