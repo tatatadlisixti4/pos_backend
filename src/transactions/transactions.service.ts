@@ -81,16 +81,18 @@ export class TransactionsService {
 
   async remove(id: number) {
     const transaction = await this.findOne(id);
-
     const errors : string[] = [];
     if(!transaction) {
       errors.push('Transacción no disponible');
       throw new NotFoundException(errors);  
     }
 
-    for (const content of transaction.contents) {
-      await this.transactionContentsRepository.remove(content);
-    }    
+    for (const contents of transaction.contents) {
+      const product = await this.productRepository.findOneBy({id: contents.id}) as Product;
+      product.inventory += contents.quantity;
+      await this.productRepository.save(product);
+      await this.transactionContentsRepository.remove(contents);
+    } 
 
     await this.transactionRepository.remove(transaction);
     return {message: 'Venta eliminada'};
