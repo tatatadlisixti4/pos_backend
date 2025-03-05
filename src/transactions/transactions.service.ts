@@ -10,41 +10,31 @@ import { Product } from 'src/products/entities/product.entity';
 export class TransactionsService {
   constructor(
     @InjectRepository(Transaction)
-    private readonly transactionRepository : Repository<Transaction>,
+    private readonly transactionRepository: Repository<Transaction>,
     @InjectRepository(TransactionContents)
-    private readonly transactionContentsRepository : Repository<TransactionContents>,
+    private readonly transactionContentsRepository: Repository<TransactionContents>,
     @InjectRepository(Product)
-    private readonly productRepository : Repository<Product>
+    private readonly productRepository: Repository<Product>,
   ) {}
 
   async create(createTransactionDto: CreateTransactionDto) {
-    const transaction = new Transaction;
-    transaction.total = createTransactionDto.total;
+    await this.productRepository.manager.transaction(async (transactionEntityManager) => {
 
-    let products : Product[] = [];
-    for (const contents of createTransactionDto.contents) {
-      const product = await this.productRepository.findOne({where: {id: contents.productId}});
-      products.push(product as Product);
-      if(!product) throw new NotFoundException('Producto no disponible');
-      if(product.inventory < contents.quantity) throw new UnprocessableEntityException('Stock insuficiente');
-    }
-    
-    await this.transactionRepository.save(transaction);
-    let i = 0;
-    for (const contents of createTransactionDto.contents) {
-      const product = products[i];
-      const updatedStock = product.inventory - contents.quantity;
-      product.inventory = updatedStock;
+      const transaction = new Transaction();
+      transaction.total = createTransactionDto.total;
+      await transactionEntityManager.save(Transaction, transaction);
 
-      await this.productRepository.save(product);
-      await this.transactionContentsRepository.save({
-        ...contents,
-        product,
-        transaction,
-      });
-      i++;
-    }
-    return 'Venta registrada correctamente';
+      for (const contents of createTransactionDto.contents) {
+        const product = await transactionEntityManager.findOne(Product, { where: {id: contents.productId} }) as Product;
+        if (!product) throw new NotFoundException('Producto no disponible');
+        if (product.inventory < contents.quantity) throw new UnprocessableEntityException('Stock insuficiente');
+        product.inventory -= contents.quantity;
+        
+        await transactionEntityManager.save(Product, product);
+        await transactionEntityManager.save(TransactionContents, { ...contents, transaction, product });
+      }
+    })
+    return 'Venta almacenada correctamente';
   }
 
   findAll() {
