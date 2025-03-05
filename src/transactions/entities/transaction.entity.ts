@@ -15,7 +15,7 @@ export class Transaction {
     })
     transactionDate: Date;
 
-    @OneToMany(() => TransactionContents, transactionContents => transactionContents.transaction, {eager: true, cascade: true})
+    @OneToMany(() => TransactionContents, transactionContents => transactionContents.transaction, {eager: false, cascade: true})
     contents: TransactionContents[]
 }
 
