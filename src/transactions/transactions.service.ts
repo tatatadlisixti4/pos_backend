@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -19,17 +19,26 @@ export class TransactionsService {
 
   async create(createTransactionDto: CreateTransactionDto) {
     await this.productRepository.manager.transaction(async (transactionEntityManager) => {
-
       const transaction = new Transaction();
-      transaction.total = createTransactionDto.total;
+      const total = createTransactionDto.contents.reduce( (total, item) =>  total + (item.price * item.quantity), 0 )
+      transaction.total = total;
       await transactionEntityManager.save(Transaction, transaction);
 
       for (const contents of createTransactionDto.contents) {
         const product = await transactionEntityManager.findOne(Product, { where: {id: contents.productId} }) as Product;
-        if (!product) throw new NotFoundException('Producto no disponible');
-        if (product.inventory < contents.quantity) throw new UnprocessableEntityException('Stock insuficiente');
+        const errors : string[] = [];
+
+        if (!product) {
+          errors.push(`El producto con el ID:${contents.productId}`);
+          throw new NotFoundException(errors);
+        }
+
+        if (product.inventory < contents.quantity) {
+          errors.push(`El articulo ${product.name} excede la cantidad disponible`);
+          throw new BadRequestException(errors);
+        }
+
         product.inventory -= contents.quantity;
-        
         await transactionEntityManager.save(Product, product);
         await transactionEntityManager.save(TransactionContents, { ...contents, transaction, product });
       }
