@@ -27,8 +27,8 @@ export class TransactionsService {
 
       for (const contents of createTransactionDto.contents) {
         const product = await transactionEntityManager.findOne(Product, { where: {id: contents.productId} }) as Product;
+        
         const errors : string[] = [];
-
         if (!product) {
           errors.push(`El producto con el ID:${contents.productId}`);
           throw new NotFoundException(errors);
@@ -61,8 +61,17 @@ export class TransactionsService {
     return this.transactionRepository.find(options);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} transaction`;
+  async findOne(id: number) {
+    const transaction = await this.transactionRepository.findOne({
+      where: {id},
+      relations: { contents : true }
+    });
+    const errors : string[] = [];
+    if(!transaction) {
+      errors.push('Transacción no disponible');
+      throw new NotFoundException(errors);  
+    }
+    return transaction;
   }
 
   update(id: number, updateTransactionDto: UpdateTransactionDto) {
