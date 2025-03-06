@@ -5,6 +5,7 @@ import {
   IsInt,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   ValidateNested,
 } from 'class-validator';
 
@@ -14,7 +15,7 @@ export class TransactionContentsDto {
   productId: number;
 
   @IsNotEmpty({ message: 'Cantidad no puede estar vacía' })
-  @IsInt({ message: 'Cantidad no válida' }) // Validate quantity too
+  @IsInt({ message: 'Cantidad no válida' })
   quantity: number;
 
   @IsNotEmpty({ message: 'Precio no puede estar vacío' })
@@ -23,9 +24,13 @@ export class TransactionContentsDto {
 }
 
 export class CreateTransactionDto {
+  @IsOptional()
   @IsNotEmpty({ message: 'El Total no puede ir vacio' })
   @IsNumber({}, { message: 'Cantidad no válida' })
   total: number;
+
+  @IsOptional()
+  coupon: string
 
   @IsArray()
   @ArrayNotEmpty({ message: 'Los Contenidos no pueden ir vacios' })
