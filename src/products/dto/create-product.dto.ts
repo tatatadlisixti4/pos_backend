@@ -1,5 +1,5 @@
 import { IsInt, IsNotEmpty, IsNumber, IsString, Min } from "class-validator"
-import { Category } from "src/categories/entities/category.entity"
+import { Category } from "../../categories/entities/category.entity"
 
 export class CreateProductDto {
     @IsNotEmpty({message: 'El nombre del producto es obligatorio'})    

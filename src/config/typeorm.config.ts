@@ -8,7 +8,7 @@ export const typeOrmConfig = (configService: ConfigService) : TypeOrmModuleOptio
     username: configService.get('DATABASE_USER'),
     database: configService.get('DATABASE_NAME'),
     port: configService.get('DATABASE_PORT'),
-    logging: true,
+    logging: false,
     entities: [join(__dirname, '../**/*.entity.{js,ts}')],
     synchronize: true
 })
