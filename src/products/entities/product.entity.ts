@@ -28,4 +28,7 @@ export class Product {
 
     @ManyToOne(() => Category)
     category: Category;
+
+	@Column('int')
+	categoryId: number;
 }

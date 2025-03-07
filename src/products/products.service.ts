@@ -40,7 +40,7 @@ export class ProductsService {
     };
 
     if (categoryId) {
-      options.where = {
+      options.where = {	
         category: { id: categoryId },
       };
     }
@@ -54,7 +54,9 @@ export class ProductsService {
   async findOne(id: number) {
     const product = await this.productRepository.findOne({
       where: { id },
-      relations: ['category'],
+      relations: {
+		category: true
+	  },
     });
 
     if (!product) {
