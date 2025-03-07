@@ -1,5 +1,12 @@
-import { 
-  Controller, Get, Post, Body, Patch, Param, Delete
+import {
+	Controller,
+	Get,
+	Post,
+	Body,
+	Patch,
+	Param,
+	Delete,
+	Query,
 } from '@nestjs/common';
 
 import { CategoriesService } from './categories.service';
@@ -7,46 +14,44 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { IdValidationPipe } from '../common/pipes/id-validation/id-validation.pipe';
 
-@Controller('categories')  
+@Controller('categories')
 export class CategoriesController {
-  constructor(
-    private readonly categoriesService: CategoriesService
-  ) {}
+	constructor(private readonly categoriesService: CategoriesService) {}
 
-  @Post()
-  create(@Body() createCategoryDto: CreateCategoryDto) {
-    return this.categoriesService.create(createCategoryDto);
-  }
+	@Post()
+	create(@Body() createCategoryDto: CreateCategoryDto) {
+		return this.categoriesService.create(createCategoryDto);
+	}
 
-  @Get()
-  findAll() {
-    return this.categoriesService.findAll();
-  }
+	@Get()
+	findAll() {
+		return this.categoriesService.findAll();
+	}
 
-  @Get(':id')
-  findOne(
-    @Param('id', IdValidationPipe
-  ) id: string) {
-    return this.categoriesService.findOne(+id);
-  }
+	@Get(':id')
+	findOne(
+		@Param('id', IdValidationPipe) id: string ,
+		@Query('products') products?: string	
+	){
+		return this.categoriesService.findOne(+id, products);
+	}
 
-  @Patch(':id')
-  update(
-    @Param('id', IdValidationPipe) id: string,
-    @Body() updateCategoryDto: UpdateCategoryDto,
-  ) {
-    console.log(id);
-    console.log(updateCategoryDto);
-    
-    
-    return this.categoriesService.update(+id, updateCategoryDto);
-  }
+	@Patch(':id')
+	update(
+		@Param('id', IdValidationPipe) id: string,
+		@Body() updateCategoryDto: UpdateCategoryDto,
+	) {
+		console.log(id);
+		console.log(updateCategoryDto);
 
-  @Delete(':id')
-  remove(
-    @Param('id', IdValidationPipe) 
-    id: string
-  ) {
-    return this.categoriesService.remove(+id);
-  }
+		return this.categoriesService.update(+id, updateCategoryDto);
+	}
+
+	@Delete(':id')
+	remove(
+		@Param('id', IdValidationPipe)
+		id: string,
+	) {
+		return this.categoriesService.remove(+id);
+	}
 }
