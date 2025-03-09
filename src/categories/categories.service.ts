@@ -21,9 +21,17 @@ export class CategoriesService {
 
 	async findOne(id: number, products?: string) {
 		const options: FindManyOptions<Category> = { where: { id } };
-		if (products === "true") options.relations = { products: true } ;
 
+		if (products === 'true') {
+			options.relations = { products: true };
+			options.order = {
+				products: {
+					id: 'DESC',
+				},
+			};
+		}
 		const category = await this.categoryRepository.findOne(options);
+
 		if (!category) {
 			throw new NotFoundException('La categoría no existe');
 		}

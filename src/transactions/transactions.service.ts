@@ -60,6 +60,7 @@ export class TransactionsService {
     const options : FindManyOptions<Transaction> = {
       relations: { contents: true }
     };
+	
     if(transactionDate) {
       const date = parseISO(transactionDate);
       if(!isValid(date)) throw new BadRequestException('Formato de fecha inválido');  
@@ -75,8 +76,8 @@ export class TransactionsService {
       where: {id},
       relations: { contents : true }
     });
-
     const errors : string[] = [];
+	
     if(!transaction) {
       errors.push('Transacción no disponible');
       throw new NotFoundException(errors);  
