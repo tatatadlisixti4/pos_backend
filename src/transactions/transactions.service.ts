@@ -37,10 +37,10 @@ export class TransactionsService {
 
       for (const contents of createTransactionDto.contents) {
         const product = await transactionEntityManager.findOne(Product, { where: {id: contents.productId} }) as Product;
-        
         const errors : string[] = [];
+
         if (!product) {
-          errors.push(`El producto con el ID:${contents.productId}`);
+          errors.push(`El producto con el ID:${contents.productId} no existe`);
           throw new NotFoundException(errors);
         }
 
@@ -48,13 +48,12 @@ export class TransactionsService {
           errors.push(`El articulo ${product.name} excede la cantidad disponible`);
           throw new BadRequestException(errors);
         }
-
         product.inventory -= contents.quantity;
         await transactionEntityManager.save(Product, product);
         await transactionEntityManager.save(TransactionContents, { ...contents, transaction, product });
       }
     })
-    return 'Venta almacenada correctamente';
+    return {message: 'Venta almacenada correctamente'};
   }
 
   findAll(transactionDate? : string) {
