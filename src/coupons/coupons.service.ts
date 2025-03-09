@@ -58,18 +58,13 @@ export class CouponsService {
   
   async applyCoupon(couponName: string) {
     const coupon = await this.couponRepository.findOneBy({name: couponName.toUpperCase()});
-    const errors : string[] = [];
     if(!coupon) {
-      errors.push('El cupón no está disponible');
-      throw new NotFoundException(errors);
+      throw new NotFoundException('El cupón no está disponible');
     };
-
     const currentDate = new Date();
     const expirationDate = endOfDay(coupon.expirationDate);
-
     if (isAfter(currentDate, expirationDate)) {
-      errors.push('El cupón ha expirado');
-      throw new UnprocessableEntityException(errors);
+      throw new UnprocessableEntityException('El cupón ha expirado');
     } 
     return { message: 'Cupón válido', ...coupon};
   }
