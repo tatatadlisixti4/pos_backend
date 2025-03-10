@@ -1,4 +1,4 @@
- import { Product } from "../../products/entities/product.entity";
+import { Product } from "../../products/entities/product.entity";
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
@@ -36,7 +36,7 @@ export class TransactionContents {
     @Column('decimal')
     price: number;
 
-    @ManyToOne(() => Product)
+    @ManyToOne(() => Product, {eager: true})
     product: Product   
 
     @ManyToOne(() => Transaction, transaction => transaction.contents)
